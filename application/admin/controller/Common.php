@@ -16,6 +16,7 @@ class Common extends Controller
     public  function asd(){
 
        echo "123";
+       echo "111";
     }
 
     public function index(){
