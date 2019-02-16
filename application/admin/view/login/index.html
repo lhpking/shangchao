@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+{include file="public/head" title="顶部开始" /}
+</head>
+<body class="login-bg">
+    
+    <div class="login layui-anim layui-anim-up">
+        <div class="message" style="background-color:#238efc;">商超管理后台</div>
+        <div id="darkbannerwrap"></div>
+            <form method="post" class="layui-form" >
+                <input name="username" placeholder="用户名"  type="text"  class="layui-input" id="name">
+                <hr class="hr15">
+                <input name="password"  placeholder="密码"  type="password" class="layui-input" id="pass">
+                <hr class="hr15">
+            </form>
+        <button class="layui-btn layui-btn-lg layui-btn-normal" style="width:100%; background-color:#238efc;" id='confirm'>登入</button>
+    </div>
+
+    <script>
+$("#confirm").click(function(){
+var $name   = $.trim($('#name').val());
+var $pass  = $.trim($('#pass').val()); 
+    if($name==''){
+        layer.msg('请输入账号', {icon: 0});
+        return false;
+    }
+    if($pass==''){
+        layer.msg('请输入密码', {icon: 0});
+        return false;
+    }
+
+    $.ajax({
+            url:"{:url('login/login')}",
+            data:{name:$name,pass:$pass},
+            type:"POST",
+            success: function(data){
+                if (data.status==1) {
+                  layer.msg(data.info,{time:1000,icon : 6});
+                    setTimeout(function(){
+                        window.location = data.url;
+                    },2000);  
+                }else{
+                    layer.msg(data.info,{time:2000,icon: data.status});
+                    $('#name').val("").focus(); 
+                    $('#pass').val("").focus();
+                }
+                
+            }
+        });
+});        
+    </script>
+</body>
+</html>

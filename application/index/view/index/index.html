@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script type="text/javascript" src="__STATIC__/js/jquery-2.1.4.min.js"></script>
+    <script src="__STATIC__/js/mui.min.js"></script>
+    <link href="__STATIC__/css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" src="__STATIC__/admin/lib/layui/layui.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+    </script>
+    <script type="text/javascript" src="__STATIC__/admin/lib/layui/layui.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/js/xadmin.js"></script>
+    <link rel="stylesheet" href="__STATIC__/admin/css/font.css">
+    <link rel="stylesheet" href="__STATIC__/admin/css/xadmin.css">
+</head>
+<body>
+	<center>
+		<ul class="mui-table-view">
+		<li class="mui-table-view-cell" style="height:3.2rem; line-height:1.8rem;">入库</li>
+		</ul>
+	</center>
+<form  method="post" class="mui-input-group">
+    <div class="mui-input-row" style="width:100%;height:3rem;">
+        <label style="line-height:1.6rem;">单号：</label>
+    <input value="{$data}" style="height:3rem;"    class="mui-input-clear" placeholder="  请输入用户名" name="orderid" id="orderid" >
+    </div>
+
+	<div class="mui-input-row" style="width:100%;height:3rem;">
+		<label style="line-height:1.6rem;">名称：</label>
+	<input type="text" class="mui-input-clear" placeholder="  请输入商品名称" name="name" id="name" style="height:3rem;">
+	</div>
+	<div class="mui-input-row" style="width:100%;height:3rem;">
+		<label style="line-height:1.6rem;">单价：</label>
+	<input type="text" class="mui-input-clear" placeholder="  请输入单价" name="money" id="money"style="height:3rem;">
+	</div>
+	<div class="mui-input-row" style="width:100%;height:3rem;">
+		<label style="line-height:1.6rem;">库存：</label>
+	<input type="text" class="mui-input-clear" placeholder="  请输入库存" name="stock" id="stock" style="height:3rem;">
+	</div>  
+	<div class="mui-input-row" style="width:100%;height:3rem;">
+		<label style="line-height:1.6rem;">备注：</label>
+		<input type="text" class="mui-input-clear" placeholder="  无可不填" name="remarks" id="remarks" style="height:3rem;">
+	</div>
+    <div class="mui-input-clear" style="width:100%;height:3rem; ">
+        <select name="tid" class="mui-navigate-right" id="tid">
+            <option value="">店铺：</option>
+            {volist name="arr" id="vo"}
+            <option value="0">总仓库</option>
+            <option value="{$vo.id}">{$vo.shop_name}</option>
+            {/volist}
+        </select>
+    </div>
+    <hr>
+    <div class="mui-input-clear" style="width:100%;height:3rem; ">
+        <select name="uid" class="mui-navigate-right" id="uid">
+            <option value="">分类：</option>
+            {volist name="res" id="vo"}
+            <option value="{$vo.id}">{$vo.typename}</option>
+            {/volist}
+        </select>
+    </div>
+    <hr>
+    <div class="mui-button-row" style="padding:4% 0 100% 0;">
+        <a  class="mui-btn mui-btn-primary" id="confirm" style="width:80%; height:2.5rem;line-height: 1.5rem;" >确认</a>
+    </div>
+
+	
+</form>
+<script type="text/javascript">
+$('#confirm').click(function(){  
+    var orderid = $.trim($('#orderid').val());
+    var name = $.trim($("#name").val());
+    var money = $.trim($("#money").val());
+    var stock = $.trim($("#stock").val());
+    var remarks = $.trim($("#remarks").val());
+    var uid = $.trim($("#uid").val());
+    var tid = $.trim($("#tid").val());
+    if(orderid == ''){  
+        layer.msg('商品单号不能为空!',function() {time:2000}); 
+        return false;  
+    }
+    if(name == ''){  
+        layer.msg('请输入商品名称！',function() {time:2000});
+        return false; 
+    }
+    if(money == ''){  
+        layer.msg('请输入商品单价！',function() {time:2000});
+        return false; 
+    }
+    if(stock == ''){  
+        layer.msg('请输入商品库存！',function() {time:2000});
+        return false; 
+    }
+    if(tid == ''){
+        layer.msg('请选择店铺！',function() {time:2000});
+        return false;
+    }
+    if(uid == ''){  
+        layer.msg('请选择商品类型！',function() {time:2000});
+        return false; 
+    }
+    $.ajax({
+            url:"{:url('index/order')}",
+            data:{orderid:orderid,name:name,money:money,stock:stock,remarks:remarks,uid:uid,tid:tid},
+            type:"POST",
+            success: function(data){
+                if (data.status==1) {
+                    layer.msg("入库成功！",{time:1000,icon: 1},function(){
+                        window.parent.location.reload();//刷新父页面
+                        });
+                }else{
+                    layer.msg(data.info,{time:2000,icon: data.status});
+                }
+            }
+        });
+
+         
+});       
+</script>
+</body>
+</html>

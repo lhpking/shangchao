@@ -1,0 +1,1 @@
+/www/server/php/70/bin/php /www/wwwroot/xiangyuelife.com/public/src/start.php stop

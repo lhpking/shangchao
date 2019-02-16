@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+{include file="public/head" title="顶部开始" /}
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-body layui-anim layui-anim-up">
+    <form action="" method="post" class="layui-form">
+      <div class="layui-form-item">
+          <label for="L_email" class="layui-form-label">
+              <span class="x-red">*</span>管理员名称
+          </label>
+          <div class="layui-input-inline">
+              <input type="text"  name="name" class="layui-input" id="name">
+          </div>
+          <div class="layui-form-mid layui-word-aux">
+          </div>
+      </div>
+      <div class="layui-form-item">
+          <label for="L_username" class="layui-form-label">
+              <span class="x-red">*</span>手机号码
+          </label>
+          <div class="layui-input-inline">
+              <input type="text"  name="phone" class="layui-input" id="phone">
+          </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>请选择权限</label>
+        <div class="layui-input-block" style="width:34%;">
+          <select name="type" lay-verify="required" id="type">
+            <option value=""></option>
+            <option value="1">超级管理员</option>
+            <option value="0">普通采购员</option>
+          </select>
+        </div>
+      </div>          
+      <div class="layui-form-item">
+          <label for="L_pass" class="layui-form-label">
+              <span class="x-red">*</span>密码
+          </label>
+          <div class="layui-input-inline">
+              <input type="password"  name="pass" class="layui-input" id="pass">
+          </div>
+          <div class="layui-form-mid layui-word-aux">
+              6到16个字符
+          </div>
+      </div>
+      <div class="layui-form-item">
+          <label for="L_repass" class="layui-form-label">
+              <span class="x-red">*</span>确认密码
+          </label>
+          <div class="layui-input-inline">
+              <input type="password"  name="pass" class="layui-input" id="pass2">
+          </div>
+      </div>
+       <div class="layui-form-item" >
+          <label class="layui-form-label"><span class="x-red">*</span>性别</label>
+          <div class="layui-input-block"  >
+            <input type="radio" name="sex" value="1" title="男"  id="sex" checked="">
+            <input type="radio" name="sex" value="2" title="女" id="sex">
+          </div>
+        </div>       
+      <div class="layui-form-item">
+          <label for="L_repass" class="layui-form-label">
+          </label>
+          <a href="javascript:;" id='confirm' class="layui-btn" >立即提交</a>
+      </div>
+  </form>
+</div>
+<script>
+$("#confirm").click(function(){
+    var name   = $.trim($('#name').val());
+    var phone  = $.trim($('#phone').val()); 
+    var type  = $.trim($('#type').val()); 
+    var pass  = $.trim($('#pass').val()); 
+    var pass2  = $.trim($('#pass2').val()); 
+    var sex  = $.trim($('#sex').val()); 
+    var index=parent.layer.getFrameIndex(window.name);
+  
+    if(name==''){
+        layer.msg('请输入管理员名称', {icon: 0});
+        return false;
+    }
+    if(phone==''){
+        layer.msg('请输入手机号码', {icon: 0});
+        return false;
+    }
+    if(type==''){
+        layer.msg('请选择权限', {icon: 0});
+        return false;
+    }
+    if(pass==''){
+        layer.msg('请输入密码', {icon: 0});
+        return false;
+    }    
+    if(pass!=pass2){
+      layer.msg('两次密码不一致', {icon: 0});
+      $('#pass').val("").focus(); 
+      $('#pass2').val("").focus();
+      return false;
+    } 
+
+    $.ajax({
+            url:"{:url('user_add')}",
+            data:{
+              name:name,
+              phone:phone,
+              type:type,
+              pass:pass,
+              sex:sex
+            },
+            type:"POST",
+            success: function(data){
+                if (data.status==1) {
+                  layer.msg('添加成功！',{time:1000,icon: 1},function(){
+                    window.parent.location.reload();
+                    parent.layer.close(index);
+                  })   
+
+                }else{
+                    layer.msg(data.info,{time:2000,icon: data.status});
+                }
+            }
+        });   
+    });
+</script>
+
+  </body>
+
+</html>

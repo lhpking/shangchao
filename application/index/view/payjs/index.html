@@ -1,0 +1,131 @@
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>商超收款</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link href="//baidu.beecdn.cn/libs/mdui/0.4.1/css/mdui.min.css" rel="stylesheet" />
+    <script src="//baidu.beecdn.cn/libs/mdui/0.4.1/js/mdui.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/lib/layui/layui.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/lib/layui/layui.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/js/xadmin.js"></script>
+    <link rel="stylesheet" href="__STATIC__/admin/css/font.css">
+    <link rel="stylesheet" href="__STATIC__/admin/css/xadmin.css">
+</head>
+<body class="mdui-theme-primary-indigo mdui-theme-accent-pink">
+        <div class="mdui-container main" id="maindev">
+            <div class="mdui-row">
+                <div class="mdui-col-xs-12 mdui-typo">
+<!--                          <div class="mdui-textfield">
+                              <label class="mdui-textfield-label">您的昵称</label>
+                              <input class="mdui-textfield-input  nickname" type="text" value="匿名" required />
+                        </div> -->
+                    <center>
+
+                              <label ></label><input class="mdui-textfield-input  price" type="hidden"  value="{$money}" required />
+                              <div class="mdui-textfield-error">金额不能为空</div>
+                             <span style="font-size:3rem;color:red;">￥{$money}</span>
+
+
+                              <label class="mdui-textfield-label"></label>
+                              <select class="mdui-select payservice">
+                                  <option value="payjs">微信支付</option>
+                                </select>
+                                             
+                         <button  onclick="genqr()" class="mdui-btn mdui-btn-block mdui-color-theme-accent mdui-ripple" style="margin-top:20px;">生成付款二维码</button>
+                        
+                         <div class="mdui-progress">
+                            <div class="mdui-progress-indeterminate"></div>
+                        </div>
+                         
+                         <div class="payqr ">
+                                <img class="mdui-img-rounded mdui-center payimg" height="55%" width="250%">
+                         </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+       
+       
+</body>
+
+<script>
+var clientId = "";
+var $$ = mdui.JQ;
+
+$$(function () { 
+    $$(".mdui-progress").hide();
+    $$(".payqr").hide();
+})
+
+
+var ws = new WebSocket("ws://xiangyuelife.com:3600");
+ws.onmessage = function (response) {
+    console.log(response);
+    var responseObj = JSON.parse(response.data);
+    if (responseObj.code !== 200) {
+        showalert(responseObj.msg);
+        return;
+    }
+    if (responseObj.event === "pay") {
+            if (responseObj.data === "WAIT_BUYER_PAY") {
+                showimg("https://baidu.beecdn.cn/donate/wait_pay.png");
+                showalert("您已扫码，等待支付中~");
+            }
+            if (responseObj.data === "TRADE_SUCCESS" || responseObj.data === "PAID") {
+                showimg("https://baidu.beecdn.cn/donate/payok.png");
+                showalert("您已支付成功");
+            }
+        }
+    if (responseObj.event === "create") {
+        showimg(responseObj.data.qr);
+        // showalert("付款二维码生成成功");
+    }
+};
+
+function showimg(img){
+    $$(".payimg").attr("src",img);
+    $$(".mdui-progress").hide();
+    $$(".mdui-btn").removeClass("disabled");
+    $$(".payqr").show();
+}
+
+function showalert(text){
+    mdui.snackbar({
+      message: text
+    });
+}
+function isNumber(val){
+    var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+    if(regPos.test(val)){
+        return true;
+    }else{
+        return false;
+    }
+}
+function genqr(){
+
+    var  service = $$(".payservice").val();
+    var  nickname = $$(".nickname").val();
+    var  price = $$(".price").val();
+    if(price <=0){
+        showalert("金额不能小于0");
+        return;
+    }
+    if(!isNumber(price)){
+        showalert("请输入正确的金额，单位为元");
+        return;
+    }
+
+    var clientId = $$.guid();
+    var msg = {"userid":clientId,"price":price,"desc":nickname+"个人收款","service":service};
+    
+    $$(".mdui-btn").addClass("disabled");
+    $$(".mdui-progress").show();
+    $$(".payqr").hide();
+    
+    ws.send(JSON.stringify(msg));
+
+}
+</script>
+
+</html>
