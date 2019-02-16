@@ -13,6 +13,10 @@ class Common extends Controller
         $this->redirect("login/index");          
         }
     }
+    public  function asd(){
+
+       echo "123";
+    }
 
     public function index(){
         $res = db::table('shop_order')->count();
